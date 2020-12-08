@@ -1,18 +1,17 @@
 package br.com.alura.spring.data;
 
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import br.com.alura.spring.data.orm.Cargo;
-import br.com.alura.spring.data.repository.CargoRepository;
 
 @SpringBootApplication
 public class SpringDataApplication implements CommandLineRunner{
-	private final CargoRepository repository;
+	private final CrudCargoService cargoService;
 	
-	public SpringDataApplication(CargoRepository repository) {
-		this.repository = repository;
+	public SpringDataApplication(CrudCargoService cargoService) {
+		this.cargoService = cargoService;
 	}
 	
 	public static void main(String[] args) {
@@ -21,10 +20,8 @@ public class SpringDataApplication implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		Cargo cargo = new Cargo();
-		cargo.setDescricao("Associate Consultant".toUpperCase());
+		cargoService.inicial();
 		
-		repository.save(cargo);
 	}
 
 }
