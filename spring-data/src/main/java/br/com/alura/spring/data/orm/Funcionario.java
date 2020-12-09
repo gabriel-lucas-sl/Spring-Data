@@ -35,7 +35,7 @@ public class Funcionario {
 	@JoinTable(name = "funcionarios_unidades", joinColumns = {
 			@JoinColumn(name = "fk_funcionario") }, 
 	inverseJoinColumns = { @JoinColumn(name = "fk_unidade") })
-	private List<Unidade> unidade;
+	private List<UnidadeTrabalho> unidadeTrabalhos;
 
 	public Integer getId() {
 		return id;
@@ -85,18 +85,17 @@ public class Funcionario {
 		this.cargo = cargo;
 	}
 
-	public List<Unidade> getUnidadeTrabalhos() {
-		return unidade;
+	public List<UnidadeTrabalho> getUnidadeTrabalhos() {
+		return unidadeTrabalhos;
 	}
 
-	public void setUnidadeTrabalhos(List<Unidade> unidade) {
-		this.unidade = unidade;
+	public void setUnidadeTrabalhos(List<UnidadeTrabalho> unidadeTrabalhos) {
+		this.unidadeTrabalhos = unidadeTrabalhos;
 	}
 
 	@Override
 	public String toString() {
-		return "Funcionario [id=" + id + ", nome=" + nome + ", cpf=" + cpf + ", salario=" + salario
-				+ ", dataContratacao=" + dataContratacao + ", cargo=" + cargo + ", unidade=" + unidade + "]";
+		return "Funcionario: " + "id:" + id + "| nome:'" + nome + "| cpf:" + cpf + "| salario:" + salario
+				+ "| dataContratacao:" + dataContratacao + "| cargo:" + cargo.getDescricao();
 	}
-
 }

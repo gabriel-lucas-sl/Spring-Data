@@ -1,4 +1,3 @@
-package br.com.alura.spring.data;
 
 import java.util.Scanner;
 

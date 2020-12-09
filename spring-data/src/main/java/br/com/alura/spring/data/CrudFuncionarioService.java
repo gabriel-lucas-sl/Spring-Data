@@ -9,136 +9,156 @@ import java.util.Scanner;
 
 import org.springframework.stereotype.Service;
 
+import br.com.alura.spring.data.orm.Cargo;
 import br.com.alura.spring.data.orm.Funcionario;
+import br.com.alura.spring.data.orm.UnidadeTrabalho;
+import br.com.alura.spring.data.repository.CargoRepository;
 import br.com.alura.spring.data.repository.FuncionarioRepository;
+import br.com.alura.spring.data.repository.UnidadeTrabalhoRepository;
 
 @Service
 public class CrudFuncionarioService {
-	private Boolean system = true;
-	private final FuncionarioRepository repository;
-	Funcionario func = new Funcionario();
-	
-	public CrudFuncionarioService(FuncionarioRepository repository) {
-		this.repository = repository;
-	}
 
-	public void inicial() {
-		Scanner s = new Scanner(System.in);
+	private Boolean system = true;
+	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	
+	private final CargoRepository cargoRepository;
+	private final FuncionarioRepository funcionarioRepository;
+	private final UnidadeTrabalhoRepository unidadeTrabalhoRepository;
+	
+	
+	public CrudFuncionarioService(FuncionarioRepository funcionarioRepository, 
+			CargoRepository cargoRepository, UnidadeTrabalhoRepository unidadeTrabalhoRepository) {
+		this.cargoRepository = cargoRepository;
+		this.funcionarioRepository = funcionarioRepository;
+		this.unidadeTrabalhoRepository = unidadeTrabalhoRepository;
+	}
+	
+	public void inicial(Scanner scanner) {
 		while(system) {
-			System.out.println("\n\nO que você deseja?\n"
-					+ "1 - Adiconar funcionário\n"
-					+ "2 - Atualizar funcionário\n"
-					+ "3 - Listar funcionários\n"
-					+ "4 - Deletar funcionário\n"
-					+ "5 - Consultar funcionário\n"
-					+ "6 - Sair\n");
-			int action = s.nextInt();
+			System.out.println("Qual acao de cargo deseja executar");
+			System.out.println("0 - Sair");
+			System.out.println("1 - Salvar");
+			System.out.println("2 - Atualizar");
+			System.out.println("3 - Visualizar");
+			System.out.println("4 - Deletar");
 			
-			switch(action) {
-				case 1:
-					add(s);
-					break;
-					
-				case 3:
-					List<Funcionario> lista = list();
-					for(Funcionario f: lista) {
-						System.out.println("ID           : " + f.getId() + 
-								           "\nNome       : " + f.getNome() +
-								           "\nCPF        : " + f.getCpf() +
-								           "\nSalário    : " + f.getSalario() +
-								           "\nContratação: " + f.getDataContratacao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-								           +"\n");
-					}
-					break;
-					
-				
-				case 4:
-					int result = delete(s);
-					if (result == 0) {
-						System.out.println("Funcionário não deletado!");
-					}
-					System.out.println("Funcionário deletado com sucesso!");
-					break;
-				
-				case 5:
-					Funcionario funcionario = read(s);
-					System.out.println("ID           : " + funcionario.getId() + 
-					           "\nNome       : " + funcionario.getNome() +
-					           "\nCPF        : " + funcionario.getCpf() +
-					           "\nSalário    : " + funcionario.getSalario() +
-					           "\nContratação: " + funcionario.getDataContratacao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-					           +"\n");
-					break;
-				
-				case 6:
-					System.out.println(".\n.\n.\n3 2 1 Saindo");
-					System.exit(0);
+			int action = scanner.nextInt();
+			
+			switch (action) {
+			case 1:
+				salvar(scanner);
+				break;
+			case 2:
+				atualizar(scanner);
+				break;
+			case 3:
+				visualizar();
+				break;
+			case 4:
+				deletar(scanner);
+				break;
+			default:
+				system = false;
+				break;
 			}
-		}
-	}
-	
-	private Funcionario add(Scanner s) {
-		System.out.println("\nNome");
-		func.setNome(s.next().toUpperCase());
-	
-		System.out.println("\nCPF");
-		func.setCpf(s.next());
-		
-		System.out.println("\nSalário");
-		func.setSalario(s.nextDouble());
-		
-		System.out.println("\nData da contratação\nObs: Insira a data nesse modelo - dd/MM/yyyy");
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		func.setDataContratacao(LocalDate.parse(s.next(), formatter));
-		
-		Funcionario f = repository.save(func);
-		if(f == null) {
-			System.out.println("Funcionário não cadastrado!");
-			return null;
-		}
-		System.out.println("Funcionário cadastrado com sucesso!");
-		return f;
-	}
-	
-	private int delete(Scanner s) {
-		System.out.println("\nDeletanto funcionário\n"
-				+ "ID:");
-		int id = s.nextInt();
-		repository.deleteById(id);
-		Funcionario f = read(id);
-		if (f == null) {
-			return 1;
-		}
-		return 0;
-	}
-	
-	private List<Funcionario> list() {
-		Iterable<Funcionario> lista = repository.findAll();
-		List<Funcionario> funcionarios = new ArrayList<Funcionario>();
-		lista.forEach(func -> funcionarios.add(func));
-		return funcionarios;
-	}
-	
-	private Funcionario read(Scanner s) {
-		System.out.println("ID do funcionário:");
-		Optional<Funcionario> funcionario = repository.findById(s.nextInt());
-		
-		if (funcionario == null) {
-			System.out.println("Funcionário não existe!");
+			
 		}
 		
-		return funcionario.get();
 	}
 	
-	private Funcionario read(int id) {
-		Optional<Funcionario> funcionario = repository.findById(id);
-		
-		if (funcionario == null) {
-			System.out.println("Funcionário não existe!");
-		}
-		
-		return funcionario.get();
+	private void salvar(Scanner scanner) {
+		System.out.println("Digite o nome");
+        String nome = scanner.next();
+
+        System.out.println("Digite o cpf");
+        String cpf = scanner.next();
+
+        System.out.println("Digite o salario");
+        Double salario = scanner.nextDouble();
+
+        System.out.println("Digite a data de contracao");
+        String dataContratacao = scanner.next();
+
+        System.out.println("Digite o cargoId");
+        Integer cargoId = scanner.nextInt();
+
+        List<UnidadeTrabalho> unidades = unidade(scanner);
+
+        Funcionario funcionario = new Funcionario();
+        funcionario.setNome(nome);
+        funcionario.setCpf(cpf);
+        funcionario.setSalario(salario);
+        funcionario.setDataContratacao(LocalDate.parse(dataContratacao, formatter));
+        Optional<Cargo> cargo = cargoRepository.findById(cargoId);
+        funcionario.setCargo(cargo.get());
+        funcionario.setUnidadeTrabalhos(unidades);
+
+        funcionarioRepository.save(funcionario);
+        System.out.println("Salvo");
 	}
 	
+	private List<UnidadeTrabalho> unidade(Scanner scanner) {
+        Boolean isTrue = true;
+        List<UnidadeTrabalho> unidades = new ArrayList<>();
+
+        while (isTrue) {
+            System.out.println("Digite o unidadeId (Para sair digite 0)");
+            Integer unidadeId = scanner.nextInt();
+
+            if(unidadeId != 0) {
+                Optional<UnidadeTrabalho> unidade = unidadeTrabalhoRepository.findById(unidadeId);
+                unidades.add(unidade.get());
+            } else {
+                isTrue = false;
+            }
+        }
+
+        return unidades;
+    }
+	
+	private void atualizar(Scanner scanner) {
+		System.out.println("Digite o id");
+        Integer id = scanner.nextInt();
+
+        System.out.println("Digite o nome");
+        String nome = scanner.next();
+
+        System.out.println("Digite o cpf");
+        String cpf = scanner.next();
+
+        System.out.println("Digite o salario");
+        Double salario = scanner.nextDouble();
+
+        System.out.println("Digite a data de contracao");
+        String dataContratacao = scanner.next();
+
+        System.out.println("Digite o cargoId");
+        Integer cargoId = scanner.nextInt();
+
+        Funcionario funcionario = new Funcionario();
+        funcionario.setId(id);
+        funcionario.setNome(nome);
+        funcionario.setCpf(cpf);
+        funcionario.setSalario(salario);
+        funcionario.setDataContratacao(LocalDate.parse(dataContratacao, formatter));
+        Optional<Cargo> cargo = cargoRepository.findById(cargoId);
+        funcionario.setCargo(cargo.get());
+
+        funcionarioRepository.save(funcionario);
+        System.out.println("Alterado");
+	}
+	
+	private void visualizar() {
+		Iterable<Funcionario> funcionarios = funcionarioRepository.findAll();
+		funcionarios.forEach(funcionario -> System.out.println(funcionario));
+	}
+	
+	private void deletar(Scanner scanner) {
+		System.out.println("Id");
+		int id = scanner.nextInt();
+		funcionarioRepository.deleteById(id);
+		System.out.println("Deletado");
+	}
 	
 }

@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "unidade_trabalho")
-public class Unidade{
+public class UnidadeTrabalho {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -53,11 +53,10 @@ public class Unidade{
         this.funcionarios = funcionarios;
     }
 
-	@Override
-	public String toString() {
-		return "Unidade [id=" + id + ", descricao=" + descricao + ", endereco=" + endereco + ", funcionarios="
-				+ funcionarios + "]";
-	}
-
-
+    @Override
+    public String toString() {
+        return "Unidades: " + "id:" + id +
+                "| descricao:" + descricao +
+                "| endereco:" + endereco;
+    }
 }

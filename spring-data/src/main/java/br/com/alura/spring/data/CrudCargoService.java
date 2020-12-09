@@ -9,72 +9,67 @@ import br.com.alura.spring.data.repository.CargoRepository;
 
 @Service
 public class CrudCargoService {
-	private Boolean system = true;
-    private final CargoRepository cargoRepository;
-    
-    public CrudCargoService(CargoRepository cargoRepository) {
-    	this.cargoRepository = cargoRepository;
-    }
 	
-	public void inicial() {
-		Scanner s = new Scanner(System.in);
+	private Boolean system = true;
+	private final CargoRepository cargoRepository;
+	
+	public CrudCargoService(CargoRepository cargoRepository) {
+		this.cargoRepository = cargoRepository;
+	}
+	
+	public void inicial(Scanner scanner) {
 		while(system) {
-			System.out.println("\n\nO que você deseja?\n"
-					+ "1 - Adiconar cargo\n"
-					+ "2 - Atualizar cargo\n"
-					+ "3 - Listar cargos\n"
-					+ "4 - Deletar cargo\n"
-					+ "5 - Sair\n");
-			int action = s.nextInt();
+			System.out.println("Qual acao de cargo deseja executar");
+			System.out.println("0 - Sair");
+			System.out.println("1 - Salvar");
+			System.out.println("2 - Atualizar");
+			System.out.println("3 - Visualizar");
+			System.out.println("4 - Deletar");
 			
-			switch(action) {
-				case 1:
-					salvar(s);
-					break;
-				
-				case 2:
-					atualizar(s);
-					break;
-				
-				case 3:
-					visualizar();
-					break;
-				
-				case 4:
-					deletar(s);
-					break;
-				
-				case 5:
-					System.out.println(".\n.\n.\n3 2 1 Saindo");
-					System.exit(0);
-				
+			int action = scanner.nextInt();
+			
+			switch (action) {
+			case 1:
+				salvar(scanner);
+				break;
+			case 2:
+				atualizar(scanner);
+				break;
+			case 3:
+				visualizar();
+				break;
+			case 4:
+				deletar(scanner);
+				break;
+			default:
+				system = false;
+				break;
 			}
 			
 		}
+		
 	}
 	
-	private void salvar(Scanner s) {
-		System.out.println("Descrição do cargo: ".toUpperCase());
-		String descricao = s.next();
+	private void salvar(Scanner scanner) {
+		System.out.println("Descricao do cargo");
+		String descricao = scanner.next();
 		Cargo cargo = new Cargo();
 		cargo.setDescricao(descricao);
-		
 		cargoRepository.save(cargo);
-		System.out.println("\nCargo adicionado com sucesso!\n");
+		System.out.println("Salvo");
 	}
 	
-	private void atualizar(Scanner s) {
-		System.out.println("ID do cargo: ");
-		int id = s.nextInt();
-		System.out.println("Descrição do cargo atualizada: ");
-		String descricao = s.next();
+	private void atualizar(Scanner scanner) {
+		System.out.println("Id");
+		int id = scanner.nextInt();
+		System.out.println("Descricao do Cargo");
+		String descricao = scanner.next();
 		
 		Cargo cargo = new Cargo();
 		cargo.setId(id);
 		cargo.setDescricao(descricao);
-		
 		cargoRepository.save(cargo);
-		System.out.println("\nCargo atualizado com sucesso!\n");
+		System.out.println("Atualizado");
 	}
 	
 	private void visualizar() {
@@ -82,11 +77,11 @@ public class CrudCargoService {
 		cargos.forEach(cargo -> System.out.println(cargo));
 	}
 	
-	private void deletar(Scanner s) {
-		System.out.println("ID do cargo:");
-		int id = s.nextInt();
+	private void deletar(Scanner scanner) {
+		System.out.println("Id");
+		int id = scanner.nextInt();
 		cargoRepository.deleteById(id);
-		System.out.println("\nCargo deletado!\n");
+		System.out.println("Deletado");
 	}
-    
+	
 }
